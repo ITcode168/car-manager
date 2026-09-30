@@ -1,8 +1,0 @@
-Order Allow,Deny
-Allow from all
-# 禁止执行PHP，防止上传webshell
-<FilesMatch "\.(php|phtml|php3|php4|php5|pl|py|cgi|sh)$">
-    Order Deny,Allow
-    Deny from all
-</FilesMatch>
-php_flag engine off
