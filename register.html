@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>车掌柜 - 注册</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.input-row .icon { width:20px; height:20px; flex-shrink:0; margin-right:12px; }
+.input-row .icon svg { width:20px; height:20px; stroke:#bbb; fill:none; stroke-width:1.5; }
+</style>
+</head><body>
+<div class="hero">
+  <h1>注册账号</h1>
+  <p>30秒注册，免费用</p>
+</div>
+<div class="card">
+  <div class="input-row">
+    <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></span>
+    <input id="name" placeholder="怎么称呼（如：老王）">
+  </div>
+  <div class="input-row">
+    <span class="icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg></span>
+    <input id="phone" placeholder="手机号" maxlength="11">
+  </div>
+  <div class="input-row">
+    <span class="icon"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+    <input id="pwd" type="password" placeholder="设个密码">
+  </div>
+  <button class="btn" onclick="doReg()">注册并登录</button>
+</div>
+<p class="ver">版本 1.0.0</p>
+<script>
+async function doReg(){
+  const r=await fetch('api/auth.php?a=register',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`name=${name.value}&phone=${phone.value}&password=${pwd.value}`});
+  const d=await r.json();
+  if(d.code===1){localStorage.setItem('token',d.token);location.href='index.html';}
+  else alert(d.msg);
+}
+</script></body></html>

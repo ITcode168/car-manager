@@ -1,0 +1,12 @@
+# 运行时上传的图片（工单照片等，包含客户隐私，禁止入库）
+/uploads/*
+!/uploads/.htaccess
+!/uploads/banner.jpg
+
+# 本地数据库账号密码（部署时填写，勿提交真实凭据）
+config.php
+
+# 系统与编辑器文件
+.DS_Store
+Thumbs.db
+*.log

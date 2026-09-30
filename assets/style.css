@@ -1,0 +1,169 @@
+/* ============ 基础 ============ */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f5f7; color:#222; min-height:100vh; }
+
+/* 登录页 */
+.hero { background:#2d2d2d; padding:60px 20px 80px; text-align:center; color:#fff; border-radius:0 0 30px 30px; }
+.hero h1 { font-size:26px; font-weight:700; letter-spacing:2px; }
+.hero p { color:#999; margin-top:8px; font-size:14px; }
+
+/* 卡片 */
+.card { background:#fff; border-radius:16px; margin:-50px 16px 16px; padding:24px 20px; box-shadow:0 2px 12px rgba(0,0,0,.04); }
+.card.plain { margin:16px; padding:20px; }
+.card h3 { font-size:15px; color:#666; margin-bottom:10px; }
+
+/* 输入 */
+.input-row { display:flex; align-items:center; border-bottom:1px solid #f0f0f0; padding:14px 0; }
+.input-row input { flex:1; border:none; outline:none; font-size:16px; background:transparent; }
+.input-row input::placeholder { color:#ccc; }
+.input { width:100%; border:1px solid #eee; border-radius:12px; padding:14px; font-size:15px; margin:8px 0; outline:none; }
+.input:focus { border-color:#e8632a; }
+
+/* 按钮 */
+.btn { display:block; width:100%; background:linear-gradient(135deg,#f07030,#e8632a); color:#fff; border:none; border-radius:30px; padding:14px; font-size:16px; font-weight:600; cursor:pointer; text-align:center; letter-spacing:4px; box-shadow:0 4px 15px rgba(232,99,42,.3); margin-top:16px; }
+.btn:active { transform:scale(.98); }
+.btn-outline { background:#fff; color:#e8632a; border:1px solid #e8632a; box-shadow:none; }
+
+/* 顶栏 */
+.topbar { background:#2d2d2d; color:#fff; padding:14px 20px; font-size:17px; font-weight:600; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+.topbar .back { color:#fff; text-decoration:none; font-size:22px; }
+
+/* 滚动公告 */
+.scroll-bar { background:#e8632a; color:#fff; padding:8px 16px; font-size:13px; white-space:nowrap; overflow:hidden; }
+.scroll-bar span { display:inline-block; animation:scroll 15s linear infinite; }
+@keyframes scroll { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
+
+/* 统计 */
+.stat-row { display:flex; gap:12px; margin:16px; }
+.stat-box { flex:1; background:#fff; border-radius:14px; padding:16px 8px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+.stat-box .num { font-size:22px; font-weight:700; }
+.stat-box .label { font-size:12px; color:#999; margin-top:4px; }
+
+/* 列表 */
+.item-row { display:flex; align-items:center; padding:14px 0; border-bottom:1px solid #f5f5f5; }
+.item-row:last-child { border:none; }
+.plate-badge { background:#1a5fb4; color:#fff; font-weight:600; border-radius:6px; border:1px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,.15); padding:6px 10px; font-size:13px; flex-shrink:0; margin-right:12px; }
+.tag { display:inline-block; padding:3px 10px; border-radius:8px; font-size:11px; }
+.tag-green { background:#e8f8ee; color:#2a9d4a; }
+.tag-red { background:#fde8e8; color:#d93030; }
+.empty { text-align:center; color:#ccc; padding:40px 0; font-size:14px; }
+
+/* 悬浮按钮 */
+.float-btn { position:fixed; bottom:80px; right:20px; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#f07030,#e8632a); color:#fff; font-size:26px; border:none; box-shadow:0 4px 15px rgba(232,99,42,.4); cursor:pointer; z-index:50; }
+
+/* 底部导航（手机端） */
+.tabbar { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #f0f0f0; display:flex; padding-bottom:env(safe-area-inset-bottom); z-index:20; }
+.tabbar a { flex:1; text-align:center; padding:8px 0; font-size:11px; color:#999; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.tabbar a svg { width:22px; height:22px; stroke:#999; fill:none; stroke-width:1.5; }
+.tabbar a.active { color:#e8632a; }
+.tabbar a.active svg { stroke:#e8632a; }
+
+/* 弹窗 */
+.popup-mask { position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,.5); z-index:100; display:flex; align-items:center; justify-content:center; }
+.popup { background:#fff; border-radius:20px; width:90%; max-width:360px; overflow:hidden; }
+.popup-head { background:linear-gradient(135deg,#f07030,#e8632a); color:#fff; padding:16px; font-weight:600; text-align:center; }
+.popup-body { padding:22px; font-size:14px; line-height:1.8; }
+.popup-foot { padding:0 22px 22px; }
+
+/* 标签按钮 */
+.chip { display:inline-block; padding:8px 14px; border-radius:10px; background:#f5f5f7; margin:4px; font-size:13px; cursor:pointer; border:none; }
+.chip:active { background:#e8632a; color:#fff; }
+.chip-on { background:#e8632a !important; color:#fff !important; }
+
+/* 筛选 */
+.filter-row { display:flex; gap:8px; padding:12px 16px; overflow-x:auto; }
+.filter-row .f { padding:6px 16px; border-radius:16px; background:#fff; font-size:13px; white-space:nowrap; cursor:pointer; }
+.filter-row .f.active { background:#e8632a; color:#fff; }
+.ver { text-align:center; color:#ccc; font-size:12px; padding:20px; }
+
+/* 首页轮播图 */
+.banner-wrap { margin:12px 16px; border-radius:14px; overflow:hidden; background:#e8e8ec; position:relative; height:140px; }
+.banner-wrap .banner-slide { width:100%; height:140px; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:14px; background:linear-gradient(135deg,#f0f0f2,#e4e4e8); }
+.banner-wrap img { width:100%; height:140px; object-fit:cover; display:block; }
+.banner-dots { position:absolute; bottom:8px; left:0; right:0; display:flex; justify-content:center; gap:6px; }
+.banner-dots span { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5); }
+.banner-dots span.on { background:#fff; }
+@media (min-width:1024px){
+  .banner-wrap { margin:20px 0 24px 0; height:200px; border-radius:16px; }  .banner-wrap .banner-slide, .banner-wrap img { height:200px; }
+}
+
+/* ============ PC端 ============ */
+.pc-sidebar { display:none; }
+@media (min-width: 1024px) {
+  body { display:block; }
+  .topbar { display:none !important; }
+  .tabbar { display:none !important; }
+  .float-btn { bottom:30px; right:30px; }
+
+  .pc-sidebar {
+    display:flex; flex-direction:column; width:220px; background:#2d2d2d; min-height:100vh; position:fixed; left:0; top:0; z-index:10;
+  }
+  .pc-sidebar .logo { padding:24px 20px; color:#fff; font-size:18px; font-weight:700; border-bottom:1px solid #444; }
+  .pc-sidebar a {
+    padding:13px 20px; color:#fff; text-decoration:none; font-size:14px; display:flex; align-items:center; gap:10px; transition:all .15s; border-left:3px solid transparent;
+    -webkit-tap-highlight-color:transparent; outline:none;
+  }
+  .pc-sidebar a:hover { color:#ddd; background:rgba(255,255,255,.06); border-left-color:rgba(255,255,255,.2); }
+  .pc-sidebar a.active { color:#fff; background:rgba(255,255,255,.08); border-left:3px solid #e8632a; }
+  .pc-sidebar a:active { background:rgba(255,255,255,.1); }
+  .pc-sidebar a:visited { color:#fff; }
+  .pc-sidebar a.active:visited { color:#fff; }
+  .pc-sidebar a svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.5; }
+  .pc-sidebar .logo { display:flex; align-items:center; gap:10px; }
+  .pc-sidebar .logo .logo-circle {
+    width:36px; height:36px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .pc-sidebar .logo .logo-circle svg { stroke:#e8632a; }
+
+  .pc-main { margin-left:220px; min-height:100vh; background:#f5f5f7; padding:24px 28px; display:flex; flex-direction:column; align-items:center; }
+  .pc-main > .topbar, .pc-main > .card, .pc-main > .stat-row, .pc-main > .filter-row, .pc-main > .pc-search, .pc-main > .pc-grid, .pc-main > p, .pc-main > .banner-wrap { width:100%; max-width:1100px; }
+  .pc-main > .quick-grid { width:100% !important; max-width:1100px !important; }
+  .pc-main > .scroll-bar { width:100%; border-radius:0; margin-bottom:0; }
+
+  /* PC端登录页：左右分栏 */
+  .login-split { display:flex; min-height:100vh; }
+  .login-left { width:45%; background:#2d2d2d; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; }
+  .login-left .logo-circle { width:80px; height:80px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:24px; }
+  .login-left h1 { font-size:32px; letter-spacing:4px; }
+  .login-left p { color:#888; margin-top:10px; font-size:15px; }
+  .login-right { flex:1; display:flex; align-items:center; justify-content:center; background:#f5f5f7; }
+  .login-right .login-box { width:400px; background:#fff; border-radius:20px; padding:40px 36px; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+
+  /* PC仪表盘：双列网格 */
+  .pc-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .pc-grid .card { margin:0; }
+  .pc-search { background:#fff; border-radius:14px; padding:14px 18px; margin-bottom:16px; align-items:center; gap:10px; position:relative; }
+  .pc-search input { flex:1; border:none; outline:none; font-size:15px; }
+  #searchResult { position:absolute; top:100%; left:0; right:0; background:#fff; border-radius:0 0 14px 14px; box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:100; overflow:hidden; margin-top:2px; }
+  #searchResult .item-row { padding:12px 18px; cursor:pointer; border-bottom:1px solid #f5f5f5; }
+  #searchResult .item-row:hover { background:#fff8f5; }
+  #searchResult .empty { padding:16px 18px; color:#999; font-size:13px; }
+  #searchResult .empty a { color:#e8632a; }
+  #searchResultM { position:relative; }
+  #searchResultM .item-row { padding:12px; cursor:pointer; border-bottom:1px solid #f5f5f5; }
+  #searchResultM .empty { padding:12px; color:#999; font-size:13px; }
+  .pc-actions { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .pc-action-btn { background:#fff; border:none; border-radius:12px; padding:14px 20px; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+  .pc-action-btn:hover { color:#e8632a; }
+}
+
+/* ============ 响应式：窗口大小变化自动切换，不用刷新 ============ */
+/* PC端(>=1024px)：显示侧边栏+PC搜索，隐藏手机搜索卡片 */
+@media (min-width: 1024px) {
+  .pc-search { display:flex; }
+  .mobile-search-card { display:none !important; }
+}
+/* 手机端(<1024px)：显示手机搜索卡片，隐藏PC搜索 */
+@media (max-width: 1023px) {
+  .pc-search { display:none !important; }
+  .mobile-search-card { display:block !important; }
+}
+
+/* 登录页：PC显示分栏，手机显示原布局 */
+@media (max-width: 1023px) {
+  .login-split { display:none !important; }
+}
+@media (min-width: 1024px) {
+  .hero { display:none !important; }
+  #mobileCard, #mobileVer { display:none !important; }
+}

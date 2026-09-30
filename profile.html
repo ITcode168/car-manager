@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>我的</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.menu-icon { width:22px; height:22px; margin-right:12px; flex-shrink:0; }
+.menu-icon svg { width:22px; height:22px; stroke:#666; fill:none; stroke-width:1.5; }
+.arrow { color:#ccc; }
+</style>
+</head><body>
+
+<div class="pc-sidebar">
+  <div class="logo"><span class="logo-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8632a" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></span>车掌柜</div>
+  <a href="index.html" ><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>首页</a>
+  <a href="records.html" ><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>维修记录</a>
+  <a href="cars.html" ><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/></svg>车辆列表</a>
+  <a href="add.html" ><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>记一笔</a>
+  <a href="items.html" ><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg>常用项目</a>
+  <a href="staff.html" ><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/></svg>员工管理</a>
+  <a href="profile.html" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>我的</a>
+  <a href="settings.html" ><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</a>
+</div>
+<div class="pc-main">
+<div class="topbar"><span>我的</span></div>
+<div class="card plain" id="shopCard"></div>
+<div class="card plain">
+  <div class="item-row" onclick="location.href='items.html'">
+    <span class="menu-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></span>
+    <div style="flex:1">常用项目管理</div><span class="arrow">›</span>
+  </div>
+  <div class="item-row" id="menu-staff" onclick="location.href='staff.html'">
+    <span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/><path d="M15 20v-1a5 5 0 0 1 6-1"/></svg></span>
+    <div style="flex:1">员工/徒弟账号</div><span class="arrow">›</span>
+  </div>
+  <div class="item-row" id="menu-settings" onclick="location.href='settings.html'">
+    <span class="menu-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+    <div style="flex:1">设置</div><span class="arrow">›</span>
+  </div>
+  <div class="item-row" onclick="location.href='password.html'">
+    <span class="menu-icon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+    <div style="flex:1">修改密码</div><span class="arrow">›</span>
+  </div>
+  <div class="item-row" onclick="logout()">
+    <span class="menu-icon"><svg viewBox="0 0 24 24" style="stroke:#d93030"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+    <div style="flex:1;color:#d93030">退出登录</div>
+  </div>
+</div>
+<p style="text-align:center;color:#bbb;font-size:12px;padding:20px">本地服务 · 有问题加微信XXX</p>
+<script src="assets/app.js"></script>
+<script>
+load();
+async function load(){
+  const [s,cfg]=await Promise.all([api('stats.php'),api('settings.php?a=get')]);
+  if(s.code===1){
+    const expire = cfg.expire_date;
+    let planBadge;
+    if(!expire || expire==='0000-00-00'){
+      planBadge='<span style="background:#e8f8ee;color:#2a9d4a;padding:3px 10px;border-radius:8px;font-size:12px">内测版</span>';
+    } else {
+      const left = Math.ceil((new Date(expire)-new Date())/86400000);
+      const color = left<7 ? '#d93030' : '#666';
+      planBadge=`<span style="color:${color};font-size:13px">有效期至 ${expire}（剩${left}天）</span>`;
+    }
+    const roleBadge = cfg.role==='boss'
+      ? '<span style="background:linear-gradient(135deg,#e8632a,#f0854a);color:#fff;padding:2px 10px;border-radius:10px;font-size:11px;margin-left:6px">老板</span>'
+      : '<span style="background:#e8f0fc;color:#3b6fd4;padding:2px 10px;border-radius:10px;font-size:11px;margin-left:6px">徒弟</span>';
+    shopCard.innerHTML=`<h3 style="font-size:17px;margin-bottom:8px">${cfg.shop_name||'我的店'}${roleBadge}</h3>
+    <div style="margin-bottom:12px">${planBadge}</div>
+    <div class="stat-row" style="margin:0">
+      <div class="stat-box"><div class="num">${s.monthly.cnt}</div><div class="label">30天单数</div></div>
+      <div class="stat-box"><div class="num">¥${s.monthly.total}</div><div class="label">30天收入</div></div>
+      <div class="stat-box"><div class="num" style="color:#d93030">¥${s.monthly.credit}</div><div class="label">待收款</div></div>
+    </div>`;
+  } else {
+    shopCard.innerHTML='<div class="empty">请先登录查看数据</div>';
+  }
+}
+</script><div class="tabbar">
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>首页</span></a>
+  <a href="records.html"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg><span>记录</span></a>
+  <a href="cars.html"><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg><span>车辆</span></a>
+  <a href="profile.html" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg><span>我的</span></a>
+</div>
+</div>
+<script>if(localStorage.getItem("role")==="staff"){document.querySelectorAll(".pc-sidebar a").forEach(function(a){if(a.href.indexOf("staff.html")>=0||a.href.indexOf("settings.html")>=0)a.style.display="none";});var m1=document.getElementById("menu-staff");if(m1)m1.style.display="none";var m2=document.getElementById("menu-settings");if(m2)m2.style.display="none";}</script></body></html>

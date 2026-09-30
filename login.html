@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>车掌柜</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.hero .logo { width:72px; height:72px; background:#fff; border-radius:50%; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+.input-row .icon { width:22px; height:22px; flex-shrink:0; margin-right:12px; color:#bbb; font-size:20px; line-height:22px; text-align:center; }
+@media (min-width:1024px){
+  .hero{display:none;}
+}
+</style>
+</head><body>
+
+<!-- 手机端登录 -->
+<div class="hero">
+  <div class="logo">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2d2d2d" stroke-width="1.8" stroke-linecap="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/>
+    </svg>
+  </div>
+  <h1>车掌柜</h1>
+  <p>谁该来了，替你记着</p>
+</div>
+
+<!-- 手机端卡片 -->
+<div class="card" id="mobileCard">
+  <div class="input-row">
+    <span class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5">
+        <rect x="7" y="2" width="10" height="20" rx="2"/>
+        <line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/>
+      </svg>
+    </span>
+    <input id="phone" placeholder="请输入手机号" maxlength="11">
+  </div>
+  <div class="input-row">
+    <span class="icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5">
+        <rect x="5" y="11" width="14" height="9" rx="2"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      </svg>
+    </span>
+    <input id="pwd" type="password" placeholder="请输入密码">
+  </div>
+  <button class="btn" onclick="doLogin()">登 录</button>
+  <p style="text-align:center;margin-top:16px;font-size:14px">
+    <a href="register.html" style="color:#e8632a;text-decoration:none">没有账号？注册</a>
+  </p>
+</div>
+<p class="ver" id="mobileVer">版本 1.0.0</p>
+
+<!-- PC端登录：左右分栏 -->
+<div class="login-split">
+  <div class="login-left">
+    <div class="logo-circle">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2d2d2d" stroke-width="1.8" stroke-linecap="round">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/>
+      </svg>
+    </div>
+    <h1>车掌柜</h1>
+    <p>谁该来了，替你记着</p>
+  </div>
+  <div class="login-right">
+    <div class="login-box">
+      <h2 style="font-size:22px;margin-bottom:6px">欢迎回来</h2>
+      <p style="color:#999;font-size:14px;margin-bottom:24px">登录你的店铺管理后台</p>
+      <div class="input-row">
+        <span class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5">
+            <rect x="7" y="2" width="10" height="20" rx="2"/>
+            <line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/>
+          </svg>
+        </span>
+        <input id="phonePC" placeholder="请输入手机号" maxlength="11">
+      </div>
+      <div class="input-row">
+        <span class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5">
+            <rect x="5" y="11" width="14" height="9" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+          </svg>
+        </span>
+        <input id="pwdPC" type="password" placeholder="请输入密码">
+      </div>
+      <button class="btn" onclick="doLoginPC()">登 录</button>
+      <p style="text-align:center;margin-top:16px;font-size:14px">
+        <a href="register.html" style="color:#e8632a;text-decoration:none">没有账号？注册</a>
+      </p>
+      <p style="text-align:center;color:#ccc;font-size:12px;margin-top:30px">版本 1.0.0</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var msg=new URLSearchParams(location.search).get('msg');
+if(msg)document.write('<div id="topMsg" style="position:fixed;top:0;left:0;right:0;background:#fff3e0;color:#e8632a;padding:12px;text-align:center;font-size:14px;z-index:999;transition:opacity .5s">'+msg+'</div><script>setTimeout(function(){var m=document.getElementById("topMsg");if(m){m.style.opacity=0;setTimeout(function(){m.remove()},500)}},4000)<\/script>');
+async function doLogin(){
+  const r=await fetch('api/auth.php?a=login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`phone=${phone.value}&password=${pwd.value}`});
+  const d=await r.json();
+  if(d.code===1){localStorage.setItem('token',d.token);localStorage.setItem('name',d.name);localStorage.setItem('role',d.role);location.href='index.html';}
+  else alert(d.msg);
+}
+async function doLoginPC(){
+  const r=await fetch('api/auth.php?a=login',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`phone=${phonePC.value}&password=${pwdPC.value}`});
+  const d=await r.json();
+  if(d.code===1){localStorage.setItem('token',d.token);localStorage.setItem('name',d.name);localStorage.setItem('role',d.role);location.href='index.html';}
+  else alert(d.msg);
+}
+</script></body></html>

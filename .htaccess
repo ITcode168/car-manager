@@ -1,0 +1,28 @@
+# 保护config.php不被直接访问
+<Files "config.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# 禁止访问install.sql
+<FilesMatch "\.(sql|md|log|ini)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# 安全头
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# 禁止目录列表
+Options -Indexes
+
+# 伪静态：不用输.html
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^admin/?$ admin.html [L]
+RewriteRule ^admin-login/?$ admin-login.html [L]
+</IfModule>

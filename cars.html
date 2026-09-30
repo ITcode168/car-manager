@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>车辆</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+
+<div class="pc-sidebar" id="sidebar"></div>
+<div class="pc-main">
+<div class="topbar"><a href="index.html" class="back">‹</a><span>车辆列表</span><span style="width:20px"></span></div>
+<input class="input" id="searchBox" placeholder="搜车牌/车主名" oninput="renderList()" style="margin:12px 0">
+<div class="card plain" id="list"></div>
+
+<script src="assets/app.js"></script>
+<script>
+const myRole=localStorage.getItem('role')||'boss';
+// 侧边栏
+document.getElementById('sidebar').innerHTML=`
+  <div class="logo"><span class="logo-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8632a" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></span>车掌柜</div>
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>首页</a>
+  <a href="records.html"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>维修记录</a>
+  <a href="cars.html" class="active"><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>车辆列表</a>
+  <a href="add.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>记一笔</a>
+  <a href="items.html"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg>常用项目</a>
+  ${myRole==='boss'?'<a href="staff.html"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/></svg>员工管理</a>':''}
+  <a href="profile.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>我的</a>
+  ${myRole==='boss'?'<a href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</a>':''}`;
+
+let allCars=[];
+load();
+async function load(){
+  const d=await api('cars.php?a=list');
+  if(d.code!==1){list.innerHTML='<div class="empty">请先登录</div>';return;}
+  allCars=d.list;
+  renderList();
+}
+function renderList(){
+  const kw=document.getElementById('searchBox').value.trim().toUpperCase();
+  const filtered=kw?allCars.filter(c=>(c.plate||'').toUpperCase().includes(kw)||(c.owner_name||'').toUpperCase().includes(kw)):allCars;
+  if(!filtered.length){list.innerHTML='<div class="empty">没有车辆</div>';}
+  else{
+    list.innerHTML=filtered.map(c=>`<div class="item-row" onclick="location.href='car.html?id=${c.id}'">
+      <div class="plate-badge">${c.plate}</div>
+      <div style="flex:1"><b>${c.plate}</b> ${c.owner_name||''}<br><small style="color:#999">${c.last_date||'新客户'}${c.created_by_name?' · '+c.created_by_name:''}</small></div>
+    </div>`).join('');
+  }
+  list.innerHTML+='<div style="text-align:center;padding:20px 0"><button onclick="showAddForm()" style="background:#e8632a;color:#fff;border:none;padding:12px 32px;border-radius:24px;font-size:15px;cursor:pointer">+ 添加车辆</button></div>'+
+  '<div id="addForm" style="display:none;background:#fff;border-radius:12px;padding:20px;margin-top:12px;box-shadow:0 2px 12px rgba(0,0,0,.1)"><b style="font-size:15px">添加车辆</b>'+
+  '<input class="input" id="newPlate" placeholder="输入车牌号" style="margin:12px 0">'+
+  '<div style="display:flex;gap:10px"><button onclick="doAdd()" style="flex:1;background:#e8632a;color:#fff;border:none;padding:12px;border-radius:24px;font-size:15px;cursor:pointer">确认添加</button>'+
+  '<button onclick="document.getElementById(\'addForm\').style.display=\'none\'" style="flex:1;background:#f0f0f0;color:#666;border:none;padding:12px;border-radius:24px;font-size:15px;cursor:pointer">取消</button></div></div>';
+}
+function showAddForm(){
+  document.getElementById('addForm').style.display='block';
+  document.getElementById('newPlate').focus();
+}
+async function doAdd(){
+  var plate=document.getElementById('newPlate').value.trim();
+  if(!plate){alert('请输入车牌号');return;}
+  var r=await api('cars.php?a=create',{method:'POST',body:{plate:plate}});
+  if(r.code===1){location.reload();}else{alert(r.msg||'添加失败');}
+}
+</script>
+<div class="tabbar">
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>首页</span></a>
+  <a href="records.html"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg><span>记录</span></a>
+  <a href="cars.html" class="active"><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg><span>车辆</span></a>
+  <a href="profile.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg><span>我的</span></a>
+</div>
+</div>
+</body></html>

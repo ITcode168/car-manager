@@ -1,0 +1,118 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>公告/轮播·车掌柜超管后台</title>
+<script>if(!sessionStorage.getItem('admin_token'))location.replace('admin-login.html');</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#333;font-size:14px;display:flex;min-height:100vh}
+.sidebar{width:200px;background:#2d2d2d;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar .logo{padding:20px;font-size:16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar .menu{flex:1;padding:8px 0}
+.sidebar .menu a{display:block;padding:12px 20px;color:#aaa;text-decoration:none;font-size:14px;transition:.2s}
+.sidebar .menu a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sidebar .menu a.on{color:#e8632a;background:rgba(232,99,42,.15);border-right:3px solid #e8632a}
+.sidebar .logout{padding:16px 20px;color:#ff6b6b;cursor:pointer;font-size:13px;border-top:1px solid rgba(255,255,255,.1)}
+.main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;align-items:center}
+.main > *{width:100%;max-width:800px}
+.card{background:#fff;border-radius:8px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:16px;margin-bottom:12px}
+h2{font-size:20px;margin-bottom:20px;color:#222}
+.input{width:100%;padding:8px 12px;border:1px solid #d9d9d9;border-radius:6px;font-size:14px;margin-bottom:10px;outline:none;transition:.2s}
+.input:focus{border-color:#e8632a;box-shadow:0 0 0 2px rgba(232,99,42,.1)}
+textarea.input{resize:vertical}
+.btn{padding:8px 20px;background:#e8632a;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer;transition:.2s}
+.btn:hover{background:#d45a24}
+.chip{display:inline-block;padding:4px 12px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px;cursor:pointer;margin:2px;background:#fff;color:#666}
+.chip:hover{border-color:#e8632a;color:#e8632a}
+.item-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px}
+.tag-green{background:#e6f7e6;color:#2a9d2a}
+.tag-red{background:#ffe6e6;color:#d93030}
+@media(max-width:768px){
+  body{flex-direction:column}
+  .sidebar{width:100%;flex-direction:row;overflow-x:auto;align-items:center}
+  .sidebar .logo{border:none;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .sidebar .menu{display:flex;padding:0}
+  .sidebar .menu a{white-space:nowrap;padding:12px 14px;border:none;border-right:3px solid transparent}
+  .sidebar .menu a.on{border-right-color:#e8632a}
+  .sidebar .logout{border:none;border-left:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .main{padding:12px}
+}
+</style></head><body>
+<div class="sidebar">
+  <div class="logo">车掌柜·超管后台</div>
+  <div class="menu">
+    <a href="admin.html">数据总览</a>
+    <a href="admin-shops.html">店铺管理</a>
+    <a href="admin-pub.html" class="on">公告/轮播</a>
+    <a href="admin-set.html">设置</a>
+  </div>
+  <div class="logout" onclick="logout()">退出登录</div>
+</div>
+<div class="main">
+  <h2>公告 / 轮播</h2>
+  <div class="card">
+    <h3>发公告</h3>
+    <select class="input" id="annType">
+      <option value="scroll">滚动公告（首页顶部跑）</option>
+      <option value="popup">弹窗公告（打开弹一次，勾选24小时不再显示）</option>
+    </select>
+    <textarea class="input" id="annContent" rows="3" placeholder="公告内容"></textarea>
+    <input class="input" id="annDays" type="number" value="7" placeholder="多少天有效">
+    <button class="btn" onclick="sendAnn()">发送</button>
+  </div>
+  <div class="card">
+    <h3>首页轮播图</h3>
+    <div id="bannerList"></div>
+    <hr style="margin:16px 0;border:none;border-top:1px solid #eee">
+    <input type="file" id="bannerFile" accept="image/*" style="display:none" onchange="uploadBannerImg(this)">
+    <input class="input" id="bannerImg" placeholder="图片地址（上传后自动填）" readonly>
+    <button class="btn" onclick="document.getElementById('bannerFile').click()" style="margin-bottom:10px">📤 上传图片</button>
+    <span id="bannerImgName" style="color:#999;font-size:13px"></span>
+    <input class="input" id="bannerLink" placeholder="点击跳转链接（可选）">
+    <input class="input" id="bannerSort" type="number" value="0" placeholder="排序">
+    <button class="btn" onclick="addBanner()">添加轮播图</button>
+  </div>
+</div>
+<script>
+function logout(){sessionStorage.removeItem('admin_token');location.href='admin-login.html';}
+const TOKEN=sessionStorage.getItem('admin_token')||'';
+async function api(path,opts={}){
+  opts.headers={...(opts.headers||{}),'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'};
+  if(opts.body)opts.body=JSON.stringify(opts.body);
+  try{const r=await fetch('api/'+path,opts);const t=await r.text();
+    try{return JSON.parse(t);}catch(e){return{code:0,msg:'服务器错误'};}
+  }catch(e){return{code:0,msg:'网络错误'};}
+}
+async function loadBanners(){
+  const d=await api('admin.php?a=banners');
+  bannerList.innerHTML=d.list.map(b=>`<div class="item-row">
+    <div style="flex:1">${b.image_url}<br><small style="color:#999">${b.link_url||'无链接'} · 排序${b.sort_order}</small></div>
+    <span class="tag ${b.status?'tag-green':'tag-red'}">${b.status?'显示':'隐藏'}</span>
+    <button class="chip" onclick="toggleBanner(${b.id})">${b.status?'隐藏':'显示'}</button>
+    <button class="chip" onclick="delBanner(${b.id})">删</button>
+  </div>`).join('')||'<div style="text-align:center;padding:40px 20px;color:#ccc;border:2px dashed #eee;border-radius:8px">还没有轮播图<br><small>上传一张图片展示在老板首页顶部</small></div>';
+}
+async function addBanner(){
+  if(!bannerImg.value){alert('请先上传图片');return;}
+  await api('admin.php?a=banner_add',{method:'POST',body:{image_url:bannerImg.value,link_url:bannerLink.value,sort_order:bannerSort.value}});
+  bannerImg.value='';bannerLink.value='';bannerImgName.textContent='';loadBanners();
+}
+async function uploadBannerImg(input){
+  const f=input.files[0];if(!f)return;
+  const fd=new FormData();fd.append('a','upload');fd.append('photo',f);
+  const r=await fetch('api/upload.php?admin=1',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+  const d=await r.json();
+  if(d.code===1){bannerImg.value=d.url;bannerImgName.textContent='✓ 已上传';}
+  else{alert(d.msg||'上传失败');}
+  input.value='';
+}
+async function toggleBanner(id){await api('admin.php?a=banner_toggle',{method:'POST',body:{id}});loadBanners();}
+async function delBanner(id){if(confirm('删除？')){await api('admin.php?a=banner_del',{method:'POST',body:{id}});loadBanners();}}
+async function sendAnn(){
+  if(!annContent.value.trim()){alert('请输入公告内容');return;}
+  await api('admin.php?a=send_announcement',{method:'POST',body:{type:annType.value,content:annContent.value,days:annDays.value}});
+  alert('已发送');annContent.value='';
+}
+loadBanners();
+</script>
+</body></html>

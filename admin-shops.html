@@ -1,0 +1,230 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>店铺管理·车掌柜超管后台</title>
+<script>if(!sessionStorage.getItem('admin_token'))location.replace('admin-login.html');</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#333;font-size:14px;display:flex;min-height:100vh}
+.sidebar{width:200px;background:#2d2d2d;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar .logo{padding:20px;font-size:16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar .menu{flex:1;padding:8px 0}
+.sidebar .menu a{display:block;padding:12px 20px;color:#aaa;text-decoration:none;font-size:14px;transition:.2s}
+.sidebar .menu a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sidebar .menu a.on{color:#e8632a;background:rgba(232,99,42,.15);border-right:3px solid #e8632a}
+.sidebar .logout{padding:16px 20px;color:#ff6b6b;cursor:pointer;font-size:13px;border-top:1px solid rgba(255,255,255,.1)}
+.main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;align-items:center}
+.main > *{width:100%;max-width:1000px}
+.card{background:#fff;border-radius:8px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:16px;margin-bottom:12px}
+h2{font-size:20px;margin-bottom:20px;color:#222}
+.chip{display:inline-block;padding:4px 12px;border:1px solid #d9d9d9;border-radius:4px;font-size:12px;cursor:pointer;margin:2px;background:#fff;color:#666;border:none}
+.chip:hover{border-color:#e8632a;color:#e8632a}
+.chip-on{background:#e8632a;color:#fff;border-color:#e8632a}
+.chip-danger{color:#d93030;border-color:#d93030}
+.item-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #f0f0f0;gap:8px;flex-wrap:wrap}
+.item-row:last-child{border-bottom:none}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px}
+.tag-green{background:#e6f7e6;color:#2a9d2a}
+.tag-red{background:#ffe6e6;color:#d93030}
+.input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin:6px 0}
+.btn{background:#e8632a;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;margin:6px 4px 6px 0}
+.btn-gray{background:#fff;color:#666;border:1px solid #ddd}
+.detail-box{background:#f9f9f9;border-radius:8px;padding:12px;margin:8px 0}
+@media(max-width:768px){
+  body{flex-direction:column}
+  .sidebar{width:100%;flex-direction:row;overflow-x:auto;align-items:center}
+  .sidebar .logo{border:none;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .sidebar .menu{display:flex;padding:0}
+  .sidebar .menu a{white-space:nowrap;padding:12px 14px;border:none;border-right:3px solid transparent}
+  .sidebar .menu a.on{border-right-color:#e8632a}
+  .sidebar .logout{border:none;border-left:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .main{padding:12px}
+}
+</style></head><body>
+<div class="sidebar">
+  <div class="logo">车掌柜·超管后台</div>
+  <div class="menu">
+    <a href="admin.html">数据总览</a>
+    <a href="admin-shops.html" class="on">店铺管理</a>
+    <a href="admin-pub.html">公告/轮播</a>
+    <a href="admin-set.html">设置</a>
+  </div>
+  <div class="logout" onclick="logout()">退出登录</div>
+</div>
+<div class="main">
+  <h2>店铺管理</h2>
+  <div class="card">
+    <h3>店铺列表</h3>
+    <div id="shopList"></div>
+    <div id="shopPage" style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap"></div>
+  </div>
+</div>
+<script>
+function logout(){sessionStorage.removeItem('admin_token');location.href='admin-login.html';}
+const TOKEN=sessionStorage.getItem('admin_token')||'';
+async function api(path,opts={}){
+  opts.headers=Object.assign({},opts.headers||{},{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'});
+  if(opts.body)opts.body=JSON.stringify(opts.body);
+  try{var r=await fetch('api/'+path,opts);var t=await r.text();
+    try{return JSON.parse(t);}catch(e){return{code:0,msg:'服务器错误'};}
+  }catch(e){return{code:0,msg:'网络错误'};}
+}
+loadShops();
+setInterval(function(){
+  if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
+  var openBox=document.querySelector('.detail-box');
+  if(openBox){
+    // 详情展开时只更新在线状态，不重建列表
+    loadShopsLite();
+  }else{
+    loadShops();
+  }
+},3000);
+async function loadShopsLite(){
+  var s=await api('admin.php?a=shops&page='+(window._shopPage||1));
+  if(s.code!==1||!s.list)return;
+  s.list.forEach(function(x){
+    var online=x.last_active&&(new Date()-new Date(x.last_active.replace(' ','T')))<10*60*1000;
+    var dot=document.querySelector('#row-'+x.id+' .online-dot');
+    if(dot){
+      dot.innerHTML=online?'<small style="color:#2a9d2a">在线</small>':'<small style="color:#999">离线</small>';
+    }
+  });
+}
+async function loadShops(){
+  var s=await api('admin.php?a=shops&page='+(window._shopPage||1));
+  if(s.code!==1){alert(s.msg||'加载失败');return;}
+  if(!s.list||s.list.length===0){shopList.innerHTML='<div style="text-align:center;padding:40px;color:#ccc">还没有店铺注册</div>';return;}
+  shopList.innerHTML=s.list.map(function(x){
+    var online=x.last_active&&(new Date()-new Date(x.last_active.replace(' ','T')))<10*60*1000;
+    var dot=online?'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2a9d2a;margin-right:4px"></span>':'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ccc;margin-right:4px"></span>';
+    var ipInfo=x.last_ip?' · IP:'+x.last_ip:'';
+    return '<div class="item-row" id="row-'+x.id+'">'+
+    '<div style="flex:1;min-width:200px"><b>'+x.name+'</b> <span class="online-dot">'+(online?'<small style="color:#2a9d2a">在线</small>':'<small style="color:#999">离线</small>')+'</span>'+
+    '<br><small style="color:#999">'+(x.phone||'')+' · '+x.user_cnt+'账号 · '+x.car_cnt+'车 · 到期'+(x.expire_date||'永久')+ipInfo+'</small>'+
+    (x.last_active?'<br><small style="color:#ccc;font-size:11px">最后活跃: '+x.last_active+'</small>':'')+'</div>'+
+    '<span class="tag '+(x.status?'tag-green':'tag-red')+'">'+(x.status?'正常':'停用')+'</span>'+
+    '<button class="chip" onclick="editShop('+x.id+',\''+x.name.replace(/'/g,"")+'\',\''+(x.phone||'')+'\')">编辑</button>'+
+    '<button class="chip" onclick="extendShop('+x.id+')">续费</button>'+
+    '<button class="chip" onclick="viewStaff('+x.id+')">徒弟</button>'+
+    '<button class="chip" onclick="viewRecords('+x.id+')">记录</button>'+
+    '<button class="chip chip-danger" onclick="toggleShop('+x.id+','+(x.status?0:1)+')">'+(x.status?'停用':'开通')+'</button>'+
+    '<div id="detail-'+x.id+'" style="display:none;width:100%;flex-basis:100%"></div>'+
+    '</div>';
+  }).join('');
+  var pg='';
+  if(s.pages>1){for(var i=1;i<=s.pages;i++)pg+='<button class="chip '+(i===s.page?'chip-on':'')+'" onclick="goPage('+i+')">'+i+'</button>';}
+  shopPage.innerHTML='<small style="color:#999;line-height:32px">共'+s.total+'家</small> '+pg;
+}
+function goPage(p){window._shopPage=p;loadShops();}
+function closeDetail(id){var el=document.getElementById('detail-'+id);if(el)el.style.display='none';}
+async function loadDetail(id,type){
+  if(type==='staff')return viewStaff(id);
+  if(type==='records')return viewRecords(id);
+  if(type==='edit')return;
+  if(type==='extend')return;
+}
+async function viewStaff(id){
+  var box=document.getElementById('detail-'+id);
+  if(box.style.display==='block'&&box.dataset.type==='staff'){box.style.display='none';return;}
+  var d=await api('admin.php?a=shop_staff&id='+id);
+  box.dataset.type='staff';
+  if(!d.list||!d.list.length){box.innerHTML='<div class="detail-box">这家店还没有徒弟账号</div>';box.style.display='block';return;}
+  var html='<div class="detail-box"><b>徒弟/账号列表</b>';
+  d.list.forEach(function(u){
+    html+='<div class="item-row"><div style="flex:1">'+(u.name||u.phone)+' <small style="color:#999">'+u.phone+' · '+(u.role==='boss'?'老板':'徒弟')+'</small></div>'+
+    '<button class="chip" onclick="resetPwd('+u.id+')">改密码</button>'+
+    (u.role==='staff'?'<button class="chip chip-danger" onclick="delStaff('+u.id+')">删除</button>':'')+'</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;box.style.display='block';
+}
+async function resetPwd(id){
+  var pwd=prompt('输入新密码（至少6位）：','123456');
+  if(!pwd)return;
+  var d=await api('admin.php?a=staff_reset_pwd',{method:'POST',body:{id:id,password:pwd}});
+  alert(d.code===1?'已修改':'失败：'+d.msg);
+}
+async function delStaff(id){
+  if(!confirm('删除这个徒弟账号？'))return;
+  await api('admin.php?a=staff_del',{method:'POST',body:{id:id}});
+  loadShops();
+}
+async function viewRecords(id){
+  var box=document.getElementById('detail-'+id);
+  if(box.style.display==='block'&&box.dataset.type==='records'){box.style.display='none';return;}
+  box.dataset.type='records';
+  var cars=await api('admin.php?a=shop_cars&id='+id);
+  var recs=await api('admin.php?a=shop_records&id='+id);
+  var html='<div class="detail-box">';
+  // 按车牌分组记录
+  var groups={};
+  (recs.list||[]).forEach(function(r){
+    if(!groups[r.plate])groups[r.plate]={owner:r.owner_name,records:[]};
+    groups[r.plate].records.push(r);
+  });
+  // 先显示有记录的车，再显示没记录的车
+  var allCars=(cars.list||[]);
+  allCars.forEach(function(c){
+    var g=groups[c.plate]||{owner:c.owner_name,records:[]};
+    html+='<div style="border:1px solid #eee;border-radius:8px;padding:12px;margin:10px 0">';
+    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+    html+='<span style="background:#1a5fb4;color:#fff;padding:2px 10px;border-radius:4px;font-size:13px">'+c.plate+'</span>';
+    html+='<small style="color:#666">'+(c.owner_name||'新客户')+'</small>';
+    html+='<small style="color:#999;margin-left:auto">'+g.records.length+'条记录</small>';
+    html+='</div>';
+    if(g.records.length){
+      g.records.forEach(function(r){
+        html+='<div style="padding:6px 0 6px 20px;font-size:13px;border-top:1px dashed #f0f0f0">'+r.service_date+' · '+r.items+' · <b>¥'+r.amount+'</b>'+(r.is_credit?'<span style="color:red">(赊账)</span>':'')+'</div>';
+      });
+    }else{
+      html+='<div style="color:#ccc;font-size:13px;padding:4px 0 4px 20px">暂无消费记录</div>';
+    }
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;box.style.display='block';
+}
+async function editShop(id,name,phone){
+  var box=document.getElementById('detail-'+id);
+  if(box.style.display==='block'&&box.dataset.type==='edit'){box.style.display='none';return;}
+  box.dataset.type='edit';
+  box.innerHTML='<div class="detail-box"><b>编辑店铺</b>'+
+  '<label>店名</label><input class="input" id="edName" value="'+name+'">'+
+  '<label>老板手机号</label><input class="input" id="edPhone" value="'+phone+'">'+
+  '<button class="btn" onclick="saveEdit('+id+')">保存</button>'+
+  '<button class="btn btn-gray" onclick="closeDetail('+id+')">取消</button></div>';
+  box.style.display='block';
+}
+async function saveEdit(id){
+  var newName=document.getElementById('edName').value;
+  var newPhone=document.getElementById('edPhone').value;
+  var d=await api('admin.php?a=shop_edit',{method:'POST',body:{id:id,name:newName,phone:newPhone}});
+  alert(d.code===1?'已保存':'失败：'+(d.msg||''));
+  loadShops();
+}
+async function extendShop(id){
+  var box=document.getElementById('detail-'+id);
+  if(box.style.display==='block'&&box.dataset.type==='extend'){box.style.display='none';return;}
+  box.dataset.type='extend';
+  box.innerHTML='<div class="detail-box"><b>续费天数</b>'+
+  '<p style="color:#999;font-size:12px;margin-bottom:8px">30=1个月 · 90=3个月 · 180=半年 · 365=1年</p>'+
+  '<input class="input" id="edDays" type="number" value="30" min="1">'+
+  '<button class="btn" onclick="saveExtend('+id+')">确认续费</button>'+
+  '<button class="btn btn-gray" onclick="closeDetail('+id+')">取消</button></div>';
+  box.style.display='block';
+}
+async function saveExtend(id){
+  var days=parseInt(document.getElementById('edDays').value);
+  if(!days||days<1){alert('天数不对');return;}
+  var d=await api('admin.php?a=shop_extend',{method:'POST',body:{id:id,days:days}});
+  if(d.code===1) alert('已续到 '+d.new_expire); else alert('失败：'+(d.msg||''));
+  loadShops();
+}
+async function toggleShop(id,status){
+  if(status===0&&!confirm('确定停用这家店？老板将无法登录'))return;
+  var d=await api('admin.php?a=shop_status',{method:'POST',body:{id:id,status:status}});
+  alert(d.code===1?'操作成功':'失败：'+(d.msg||''));
+  loadShops();
+}
+</script>
+</body></html>

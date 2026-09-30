@@ -1,0 +1,106 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>记录</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+
+<div class="pc-sidebar">
+  <div class="logo"><span class="logo-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8632a" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></span>车掌柜</div>
+  <a href="index.html" ><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>首页</a>
+  <a href="records.html" class="active"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>维修记录</a>
+  <a href="cars.html" ><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/></svg>车辆列表</a>
+  <a href="add.html" ><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>记一笔</a>
+  <a href="items.html" ><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg>常用项目</a>
+  <a href="staff.html" ><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/></svg>员工管理</a>
+  <a href="profile.html" ><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>我的</a>
+  <a href="settings.html" ><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</a>
+</div>
+<div class="pc-main">
+<div class="topbar"><span>维修记录</span></div>
+<div class="filter-row" id="filter">
+  <div class="f active" data-r="today" onclick="setFilter(this)">今天</div>
+  <div class="f" data-r="week" onclick="setFilter(this)">本周</div>
+  <div class="f" data-r="month" onclick="setFilter(this)">本月</div>
+  <div class="f" data-r="all" onclick="setFilter(this)">全部</div>
+  <div class="f" data-r="credit" onclick="setFilter(this)">待收款</div>
+</div>
+<div class="stat-row">
+  <div class="stat-box"><div class="num" id="sumCnt">0</div><div class="label">单数</div></div>
+  <div class="stat-box"><div class="num" id="sumTotal">¥0</div><div class="label">总额</div></div>
+  <div class="stat-box"><div class="num" style="color:#d93030" id="sumCredit">¥0</div><div class="label">赊账</div></div>
+</div>
+<div class="card plain" id="listBox"></div>
+<script src="assets/app.js"></script>
+<script>
+let curRange='today';
+load();
+function setFilter(el){document.querySelectorAll('.f').forEach(x=>x.classList.remove('active'));el.classList.add('active');curRange=el.dataset.r;load();}
+async function load(){
+  const d=await api('services.php?a=list&range='+curRange);
+  if(d.code!==1||!d.list){
+    // 示范数据
+    sumCnt.textContent='3';sumTotal.textContent='¥1,140';sumCredit.textContent='¥380';
+    listBox.innerHTML=`
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E12345</div>
+        <div style="flex:1"><b>豫E12345</b> 王哥<br><small style="color:#999">小保养 · 2026-09-28</small><br><span class="tag tag-red">赊账</span></div>
+        <b>¥380</b>
+      </div>
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E67890</div>
+        <div style="flex:1"><b>豫E67890</b> 李姐<br><small style="color:#999">补胎 · 2026-09-28</small><br><span class="tag tag-green">已收款</span></div>
+        <b>¥30</b>
+      </div>
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E88888</div>
+        <div style="flex:1"><b>豫E88888</b><br><small style="color:#999">镀晶 · 2026-09-27</small><br><span class="tag tag-green">已收款</span></div>
+        <b>¥730</b>
+      </div>
+      <p style="text-align:center;color:#bbb;font-size:12px;margin-top:16px">↑ 示范数据，登录后显示你的真实记录</p>`;
+    return;
+  }
+  sumCnt.textContent=d.sum.cnt;sumTotal.textContent='¥'+d.sum.total;sumCredit.textContent='¥'+d.sum.credit;
+  listBox.innerHTML=d.list.map(x=>`
+    <div class="item-row">
+      <div class="plate-badge">${x.plate}</div>
+      <div style="flex:1">
+        <b>${x.plate}</b> ${x.owner_name||''}
+        <br><small style="color:#999">${x.items||'-'} · ${x.service_date}${x.staff_name?' · '+x.staff_name:''}</small><br>
+        ${x.is_credit && !x.credit_settled?'<span class="tag tag-red">赊账</span>':'<span class="tag tag-green">已收款</span>'}
+      </div>
+      <b>¥${x.amount}</b>
+      ${x.is_credit&&!x.credit_settled&&(localStorage.getItem('role')==='boss'||x.staff_name===localStorage.getItem('myName'))?`<button class="chip" onclick="settle(${x.id})">结清</button>`:''}
+    </div>`).join('')||'<div class="empty">暂无记录</div>';
+}
+async function settle(id){await api('services.php?a=settle',{method:'POST',body:{id}});load();}
+async function del(id){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  var box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:16px;width:80%;max-width:320px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)';
+  box.innerHTML='<div style="padding:28px 24px 20px;text-align:center;font-size:16px;color:#333;font-weight:500">确定删除这条记录？</div>';
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;border-top:1px solid #f0f0f0';
+  var cancel=document.createElement('button');
+  cancel.textContent='取消';
+  cancel.style.cssText='flex:1;padding:15px;border:none;background:#fff;color:#666;font-size:15px;cursor:pointer';
+  cancel.onclick=function(){document.body.removeChild(ov);};
+  var ok=document.createElement('button');
+  ok.textContent='确认删除';
+  ok.style.cssText='flex:1;padding:15px;border:none;background:#fff;color:#d93030;font-size:15px;font-weight:600;cursor:pointer;border-left:1px solid #f0f0f0';
+  ok.onclick=async function(){
+    document.body.removeChild(ov);
+    await api('services.php?a=delete',{method:'POST',body:{id}});
+    load();
+  };
+  btns.appendChild(cancel);btns.appendChild(ok);
+  box.appendChild(btns);
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+}
+</script><div class="tabbar">
+  <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>首页</span></a>
+  <a href="records.html" class="active"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg><span>记录</span></a>
+  <a href="cars.html"><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg><span>车辆</span></a>
+  <a href="profile.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg><span>我的</span></a>
+</div>
+</div>
+<script>if(localStorage.getItem("role")==="staff"){document.querySelectorAll(".pc-sidebar a").forEach(function(a){if(a.href.indexOf("staff.html")>=0||a.href.indexOf("settings.html")>=0)a.style.display="none";});}</script></body></html>

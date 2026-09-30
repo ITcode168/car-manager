@@ -1,0 +1,246 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>车掌柜</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta property="og:title" content="车掌柜 · 修车店自己的记账工具">
+<meta property="og:description" content="记一笔就完事，修车店老板自己的小程序">
+<meta property="og:image" content="/uploads/banner.jpg">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.stat-box .num { font-size:20px; font-weight:700; white-space:nowrap; }
+.quick-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:16px; }
+.quick-item { padding:12px 8px; text-align:center; cursor:pointer; border-radius:12px; }
+.quick-item svg { width:28px; height:28px; stroke:#888; fill:none; stroke-width:1.5; margin-bottom:6px; }
+.quick-item .label { font-size:13px; color:#666; }
+.quick-item:hover { background:#fff; }
+.quick-item:hover svg { stroke:#e8632a; }
+@media (min-width:1024px){
+  .quick-grid { margin:0 0 24px 0; grid-template-columns:repeat(5,1fr); gap:20px; width:100%; max-width:1100px; }
+  .quick-item { padding:16px 8px; }
+  .quick-item svg { width:32px; height:32px; }
+  .quick-item .label { font-size:14px; }
+}
+</style>
+</head><body>
+
+<div class="pc-sidebar">
+  <div class="logo"><div class="logo-circle"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#e8632a" stroke-width="2" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></div>车掌柜</div>
+  <a href="index.html" class="active"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>首页</a>
+  <a href="records.html"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>维修记录</a>
+  <a href="cars.html"><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>车辆列表</a>
+  <a href="add.html"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>记一笔</a>
+  <a href="items.html"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg>常用项目</a>
+  <a href="staff.html"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/></svg>员工管理</a>
+  <a href="profile.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>我的</a>
+  <a href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</a>
+</div>
+
+<div class="pc-main">
+<div class="topbar"><span>车掌柜</span><span id="shopName" style="font-size:13px;color:#aaa"></span></div>
+<div class="scroll-bar" id="scrollBar" style="display:none"><span id="scrollText"></span></div>
+
+<!-- 到期提醒条（7天内才显示） -->
+<div id="expireTip" style="display:none;background:#fff3e0;color:#e8632a;padding:10px 16px;font-size:13px;text-align:center"></div>
+
+<!-- 轮播图 -->
+<div class="banner-wrap" id="bannerWrap">
+  <div class="banner-slide">广告位 · 后台上传图片后显示</div>
+</div>
+
+<!-- PC搜索栏 -->
+<div class="pc-search">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+  <input id="searchBox" placeholder="搜车牌/车主名" oninput="searchCar()">
+  <div id="searchResult"></div>
+</div>
+
+<!-- 手机端搜索卡片 -->
+<div class="card plain mobile-search-card">
+  <input class="input" id="searchBoxM" placeholder="搜车牌/车主名" oninput="searchCarM()">
+  <div id="searchResultM"></div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-box"><div class="num" id="todayCnt">0</div><div class="label">今日接车</div></div>
+  <div class="stat-box"><div class="num" id="todayTotal">¥0</div><div class="label">今日收入</div></div>
+  <div class="stat-box"><div class="num" style="color:#d93030" id="debtTotal">¥0</div><div class="label">待收款</div></div>
+</div>
+
+<div class="quick-grid">
+  <div class="quick-item" onclick="location.href='add.html'">
+    <svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9"/><path d="M14 3v5h5"/><path d="M18.5 13.5l2 2-4 4.5h-2v-2l4-4.5z"/></svg>
+    <div class="label">记一笔</div>
+  </div>
+  <div class="quick-item" onclick="location.href='records.html'">
+    <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><path d="M15 15l3 3"/></svg>
+    <div class="label">看记录</div>
+  </div>
+  <div class="quick-item" onclick="location.href='cars.html'">
+    <svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>
+    <div class="label">车辆</div>
+  </div>
+  <div class="quick-item" onclick="location.href='items.html'">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M14.7 8.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l1.8-1.8a4 4 0 0 1-5.6 5.6l-4.9 4.9a1.5 1.5 0 0 1-2.1-2.1l4.9-4.9a4 4 0 0 1 5.6-5.6l-1.8 1.8z"/></svg>
+    <div class="label">项目</div>
+  </div>
+  <div class="quick-item" onclick="location.href='rescue.html'">
+    <svg viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/><path d="M12 8v4"/><circle cx="12" cy="15.5" r="0.5"/></svg>
+    <div class="label">救援</div>
+  </div>
+</div>
+
+<div class="pc-grid">
+  <div class="card plain">
+    <h3 style="font-size:15px;margin-bottom:10px">今天该催谁</h3>
+    <div id="remindList"><div class="empty">没有到期的</div></div>
+  </div>
+  <div class="card plain">
+    <h3 style="font-size:15px;margin-bottom:10px">最近接的车</h3>
+    <div id="recentList"><div class="empty">暂无记录</div></div>
+  </div>
+</div>
+
+<div style="height:70px"></div>
+<button class="float-btn" onclick="location.href='add.html'">+</button>
+
+<script src="assets/app.js"></script>
+<script>
+load();
+// 加载轮播图
+loadBanners();
+async function loadBanners(){
+  try{
+    const r=await fetch('api/settings.php?a=banners_public');
+    const d=await r.json();
+    if(d.code===1 && d.list.length){
+      const w=document.getElementById('bannerWrap');
+      w.innerHTML=d.list.map((b,i)=>`
+        <a href="${b.link_url||'#'}" ${b.link_url?'':'onclick="return false"'}>
+          <img src="${b.image_url}" style="display:${i===0?'block':'none'}">
+        </a>`).join('')+
+        `<div class="banner-dots">${d.list.map((_,i)=>`<span class="${i===0?'on':''}"></span>`).join('')}</div>`;
+      // 自动轮播
+      let idx=0;const slides=w.querySelectorAll('img');const dots=w.querySelectorAll('.banner-dots span');
+      if(slides.length>1){setInterval(()=>{slides[idx].style.display='none';dots[idx].classList.remove('on');idx=(idx+1)%slides.length;slides[idx].style.display='block';dots[idx].classList.add('on');},3500);}
+    }
+  }catch(e){}
+}
+async function load(){
+  checkPopup();
+  const s=await api('stats.php');
+  if(s.code===1){
+    todayCnt.textContent=s.today.cnt;
+    todayTotal.textContent='¥'+s.today.total;
+    debtTotal.textContent='¥'+s.monthly.credit;
+    // 检查到期提醒
+    const cfg=await api('settings.php?a=get');
+    if(!cfg.shop_name || cfg.shop_name==='undefined' || cfg.shop_name==='我的店'){
+      location.href='settings.html?first=1';
+      return;
+    }
+    if(cfg.expire_date && cfg.expire_date!=='0000-00-00'){
+      const left=Math.ceil((new Date(cfg.expire_date)-new Date())/86400000);
+      if(left<=7){
+        expireTip.style.display='block';
+        expireTip.textContent=`会员 ${cfg.expire_date} 到期，还剩 ${left} 天，请联系续费`;
+      }
+    }
+  } else {
+    todayCnt.textContent='3';
+    todayTotal.textContent='¥1,140';
+    debtTotal.textContent='¥380';
+    remindList.innerHTML=`
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E12345</div>
+        <div style="flex:1"><b>豫E12345</b> 王哥<br><small style="color:#999">2026-10-05 到期</small></div>
+        <button class="chip">发话术</button><button class="chip">已联系</button>
+      </div>
+      <p style="text-align:center;color:#bbb;font-size:12px">↑ 示范数据</p>`;
+    recentList.innerHTML=`
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E12345</div>
+        <div style="flex:1"><b>豫E12345</b> 王哥<br><small style="color:#999">小保养 · 2026-09-28</small></div>
+        <b>¥380</b>
+      </div>
+      <div class="item-row" style="opacity:.5">
+        <div class="plate-badge">豫E67890</div>
+        <div style="flex:1"><b>豫E67890</b> 李姐<br><small style="color:#999">补胎 · 2026-09-27</small></div>
+        <b>¥30</b>
+      </div>
+      <p style="text-align:center;color:#bbb;font-size:12px">↑ 示范数据，登录后显示你的真实记录</p>`;
+    return;
+  }
+  const a=await api('settings.php?a=announcements');
+  if(a.scroll){scrollBar.style.display='block';scrollText.textContent=a.scroll;}
+  const r=await api('services.php?a=remind_today');
+  if(r.list && r.list.length){
+    remindList.innerHTML=r.list.map(x=>`
+      <div class="item-row">
+        <div class="plate-badge">${x.plate}</div>
+        <div style="flex:1"><b>${x.plate}</b> ${x.owner_name||''}<br><small style="color:#999">${x.next_remind_date} 到期</small></div>
+        <button class="chip" onclick="genMsg('${x.plate}')">发话术</button>
+        <button class="chip" onclick="doneRemind(${x.id})">已联系</button>
+      </div>`).join('');
+  }
+  const rec=await api('services.php?a=list&range=week');
+  if(rec.code===1 && rec.list.length){
+    recentList.innerHTML=rec.list.slice(0,5).map(x=>`
+      <div class="item-row" onclick="location.href='car.html?id=${x.car_id}'">
+        <div class="plate-badge">${x.plate}</div>
+        <div style="flex:1"><b>${x.plate}</b> ${x.owner_name||''}<br><small style="color:#999">${x.items||''} · ${x.service_date}</small></div>
+        <b>¥${x.amount}</b>
+      </div>`).join('');
+  }
+}
+async function doSearch(inputId, resultId){
+  const kw=document.getElementById(inputId).value.trim();
+  const result=document.getElementById(resultId);
+  if(!kw){result.innerHTML='';return;}
+  try{
+    const d=await api('cars.php?a=search&kw='+encodeURIComponent(kw));
+    if(d.code!==1 || !d.list){
+      // 未登录时显示示范搜索结果
+      const kwUpper=kw.toUpperCase();
+      const demo=[{plate:'豫E12345',owner:'王哥'},{plate:'豫E67890',owner:'李姐'},{plate:'豫E88888',owner:'赵哥'}];
+      const match=demo.filter(c=>c.plate.toUpperCase().includes(kwUpper)||c.owner.includes(kw));
+      if(match.length){
+        result.innerHTML=match.map(c=>`<div class="item-row" style="opacity:.5"><div class="plate-badge">${c.plate}</div><div><b>${c.plate}</b> ${c.owner}</div></div>`).join('');
+      } else {
+        result.innerHTML='';
+      }
+      return;
+    }
+    result.innerHTML=d.list.map(c=>`<div class="item-row" onclick="location.href='car.html?id=${c.id}'">
+      <div class="plate-badge">${c.plate}</div>
+      <div><b>${c.plate}</b> ${c.owner_name||''}</div></div>`).join('') || '<div class="empty">没找到，<a href="add.html?plate='+kw+'" style="color:#e8632a">新建车辆</a></div>';
+  }catch(e){result.innerHTML='';}
+}
+function searchCar(){doSearch('searchBox','searchResult');}
+function searchCarM(){doSearch('searchBoxM','searchResultM');}
+function genMsg(plate){
+  prompt('复制发给客户：','你好，你的车该做保养了，方便的时候过来一趟。');
+}
+async function doneRemind(id){
+  await api('services.php?a=remind_done',{method:'POST',body:{id}});
+  load();
+}
+</script>
+<div class="tabbar">
+  <a href="index.html" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    <span>首页</span>
+  </a>
+  <a href="records.html">
+    <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
+    <span>记录</span>
+  </a>
+  <a href="cars.html">
+    <svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>
+    <span>车辆</span>
+  </a>
+  <a href="profile.html">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+    <span>我的</span>
+  </a>
+</div>
+</div>
+<script>if(localStorage.getItem("role")==="staff"){document.querySelectorAll(".pc-sidebar a").forEach(function(a){if(a.href.indexOf("staff.html")>=0||a.href.indexOf("settings.html")>=0)a.style.display="none";});}</script></body></html>

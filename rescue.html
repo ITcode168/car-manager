@@ -1,0 +1,76 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>紧急救援</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="topbar"><a href="index.html" class="back">‹</a><span>紧急救援</span><span style="width:20px"></span></div>
+<div class="card plain">
+  <h3>救援信息</h3>
+  <div class="input-row" style="display:flex;gap:8px"><input id="plate" placeholder="车牌号（如 豫E12345）" maxlength="10" style="flex:1"><button class="chip" onclick="document.getElementById('plateFile').click()">📷识别</button></div>
+  <input type="file" id="plateFile" accept="image/*" style="display:none" onchange="recognizePlate(this)">
+  <div class="input-row"><input id="owner" placeholder="车主姓名（可选）" maxlength="20"></div>
+  <div class="input-row"><input id="phone" placeholder="联系电话（可选）" maxlength="11"></div>
+  <div style="margin:16px 0">
+    <label style="font-size:14px;color:#666">故障类型</label>
+    <div id="rescueTypes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+  </div>
+  <div class="input-row"><input id="location" placeholder="救援地点（可选）" maxlength="100"></div>
+  <div class="input-row"><input id="amount" type="number" placeholder="救援费用（元）" step="0.01"></div>
+  <div class="input-row"><textarea id="note" placeholder="备注：什么问题、怎么处理的..." style="flex:1;border:none;outline:none;font-size:15px;min-height:60px;width:100%;resize:none"></textarea></div>
+  <label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:14px;color:#666"><input type="checkbox" id="isCredit"> 赊账（没给钱）</label>
+  <label style="font-size:13px;color:#999;display:block;margin-top:8px">现场照片（可选）</label>
+  <div id="photoPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div>
+  <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="uploadPhoto(this)">
+  <button class="chip" onclick="document.getElementById('photoInput').click()" style="width:100%">📷 拍照/选图</button>
+  <button class="btn" onclick="save()">保存救援记录</button>
+</div>
+<script src="assets/app.js"></script>
+<script>
+const types=['补胎','搭电','送油','拖车','熄火','漏水','异响','电瓶亏电','空调故障','其他'];
+let selectedType='';
+document.getElementById('rescueTypes').innerHTML=types.map(t=>`<button class="chip" onclick="pickType(this,'${t}')">${t}</button>`).join('');
+function pickType(btn,t){
+  document.querySelectorAll('#rescueTypes .chip').forEach(c=>c.classList.remove('chip-on'));
+  btn.classList.add('chip-on');
+  selectedType=t;
+}
+async function save(){
+  const plate=document.getElementById('plate').value.trim();
+  if(!plate){alert('请输入车牌号');return;}
+  if(!selectedType){alert('请选故障类型');return;}
+  const r=await api('services.php?a=rescue',{method:'POST',body:{
+    plate, owner_name:document.getElementById('owner').value.trim(),
+    phone:document.getElementById('phone').value.trim(),
+    rescue_type:selectedType,
+    location:document.getElementById('location').value.trim(),
+    amount:parseFloat(document.getElementById('amount').value)||0,
+    note:document.getElementById('note').value.trim(),
+    is_credit:document.getElementById('isCredit').checked?1:0,
+    photos:window._photos||[]
+  }});
+  if(r.code===1){alert('已保存');location.href='index.html';}
+  else alert(r.msg||'保存失败');
+}
+window._photos=[];
+async function recognizePlate(input){
+  const f=input.files[0];if(!f)return;
+  const fd=new FormData();fd.append('a','recognize_plate');fd.append('photo',f);
+  const r=await fetch('api/upload.php',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+  const d=await r.json();
+  if(d.code===1){document.getElementById('plate').value=d.plate;alert('识别成功：'+d.plate);}
+  else alert(d.msg||'识别失败，请手动输入');
+  input.value='';
+}
+async function uploadPhoto(input){
+  for(const f of input.files){
+    const fd=new FormData();
+    fd.append('a','upload');fd.append('photo',f);
+    const r=await fetch('api/upload.php',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+    const d=await r.json();
+    if(d.code===1){
+      window._photos.push(d.url);
+      photoPreview.innerHTML+=`<img src="${d.url}" style="width:70px;height:70px;object-fit:cover;border-radius:8px">`;
+    }
+  }
+  input.value='';
+}
+</script>
+</body></html>

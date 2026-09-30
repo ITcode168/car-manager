@@ -1,0 +1,102 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>数据总览·车掌柜超管后台</title>
+<script>if(!sessionStorage.getItem('admin_token'))location.replace('admin-login.html');</script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f0f2f5;color:#333;font-size:14px;display:flex;min-height:100vh}
+.sidebar{width:200px;background:#2d2d2d;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar .logo{padding:20px;font-size:16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar .menu{flex:1;padding:8px 0}
+.sidebar .menu a{display:block;padding:12px 20px;color:#aaa;text-decoration:none;font-size:14px;transition:.2s}
+.sidebar .menu a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sidebar .menu a.on{color:#e8632a;background:rgba(232,99,42,.15);border-right:3px solid #e8632a}
+.sidebar .logout{padding:16px 20px;color:#ff6b6b;cursor:pointer;font-size:13px;border-top:1px solid rgba(255,255,255,.1)}
+.main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;align-items:center}
+.main > *{width:100%;max-width:1100px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-box{background:#fff;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-box .num{font-size:28px;font-weight:700}
+.stat-box .label{font-size:13px;color:#999;margin-top:4px}
+.card{background:#fff;border-radius:8px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:16px;margin-bottom:12px}
+h2{font-size:20px;margin-bottom:20px;color:#222}
+@media(max-width:768px){
+  body{flex-direction:column}
+  .sidebar{width:100%;flex-direction:row;overflow-x:auto;align-items:center}
+  .sidebar .logo{border:none;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .sidebar .menu{display:flex;padding:0}
+  .sidebar .menu a{white-space:nowrap;padding:12px 14px;border:none;border-right:3px solid transparent}
+  .sidebar .menu a.on{border-right-color:#e8632a}
+  .sidebar .logout{border:none;border-left:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .main{padding:12px}
+}
+</style></head><body>
+<div class="sidebar">
+  <div class="logo">车掌柜·超管后台</div>
+  <div class="menu">
+    <a href="admin.html" class="on">数据总览</a>
+    <a href="admin-shops.html">店铺管理</a>
+    <a href="admin-pub.html">公告/轮播</a>
+    <a href="admin-set.html">设置</a>
+  </div>
+  <div class="logout" onclick="logout()">退出登录</div>
+</div>
+<div class="main">
+  <h2>数据总览</h2>
+  <div class="stat-row">
+    <div class="stat-box"><div class="num" id="shops">0</div><div class="label">店铺数</div></div>
+    <div class="stat-box"><div class="num" id="todayOrders">0</div><div class="label">今日工单</div></div>
+    <div class="stat-box"><div class="num" id="monthRevenue">¥0</div><div class="label">30天流水</div></div>
+    <div class="stat-box"><div class="num" style="color:#d93030" id="expiring">0</div><div class="label">30天到期</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card" style="margin:0"><h3>近30天订单量</h3><div id="chartOrders" style="height:280px"></div></div>
+    <div class="card" style="margin:0"><h3>近30天流水（元）</h3><div id="chartRevenue" style="height:280px"></div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><h3>店铺累计增长</h3><div id="chartShops" style="height:220px"></div></div>
+</div>
+<script>
+function logout(){sessionStorage.removeItem('admin_token');location.href='admin-login.html';}
+const TOKEN=sessionStorage.getItem('admin_token')||'';
+async function api(path,opts={}){
+  opts.headers={...(opts.headers||{}),'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'};
+  if(opts.body)opts.body=JSON.stringify(opts.body);
+  try{const r=await fetch('api/'+path,opts);const t=await r.text();
+    try{return JSON.parse(t);}catch(e){return{code:0,msg:'服务器错误'};}
+  }catch(e){return{code:0,msg:'网络错误'};}
+}
+(async()=>{
+  const o=await api('admin.php?a=overview');
+  if(o.code!==1){alert(o.msg||'加载失败');return;}
+  shops.textContent=o.shops||0;todayOrders.textContent=o.todayOrders||0;
+  monthRevenue.textContent='¥'+(o.monthRevenue||0);expiring.textContent=o.expiring||0;
+  loadCharts();
+})();
+async function loadCharts(){
+  const d=await api('admin.php?a=chart&days=30');
+  if(d.code!==1)return;
+  const orange='#e8632a';
+  echarts.init(document.getElementById('chartOrders')).setOption({
+    tooltip:{trigger:'axis'},grid:{left:40,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:d.dates,axisLabel:{color:'#999',fontSize:10}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#f0f0f0'}},axisLabel:{color:'#999'}},
+    series:[{type:'bar',data:d.orders,itemStyle:{color:orange,borderRadius:[4,4,0,0]},barWidth:'60%'}]
+  });
+  echarts.init(document.getElementById('chartRevenue')).setOption({
+    tooltip:{trigger:'axis',valueFormatter:v=>'¥'+v},grid:{left:50,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:d.dates,axisLabel:{color:'#999',fontSize:10}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#f0f0f0'}},axisLabel:{color:'#999'}},
+    series:[{type:'line',data:d.revenue,smooth:true,lineStyle:{color:orange,width:2},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(232,99,42,.25)'},{offset:1,color:'rgba(232,99,42,0)'}]}},itemStyle:{color:orange}}]
+  });
+  echarts.init(document.getElementById('chartShops')).setOption({
+    tooltip:{trigger:'axis'},grid:{left:40,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:d.dates,axisLabel:{color:'#999',fontSize:10}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#f0f0f0'}},axisLabel:{color:'#999'}},
+    series:[{type:'line',data:d.shops,smooth:true,lineStyle:{color:'#2d2d2d',width:2},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(45,45,45,.15)'},{offset:1,color:'rgba(45,45,45,0)'}]}},itemStyle:{color:'#2d2d2d'}}]
+  });
+}
+window.addEventListener('resize',()=>{['chartOrders','chartRevenue','chartShops'].forEach(id=>{const el=document.getElementById(id);const c=echarts.getInstanceByDom(el);if(c)c.resize();});});
+</script>
+</body></html>

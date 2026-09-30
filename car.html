@@ -1,0 +1,100 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>车辆详情</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="topbar"><a href="cars.html" class="back">‹</a><span>车辆详情</span><span style="width:20px"></span></div>
+<div id="box"></div>
+<div class="card plain">
+  <button class="btn" onclick="location.href='add.html?plate='+car.plate">+ 记一笔</button>
+</div>
+<script src="assets/app.js"></script>
+<script>
+const carId=new URLSearchParams(location.search).get('id');
+let car;
+load();
+let myRole=localStorage.getItem('role')||'boss';
+let myName=localStorage.getItem('myName')||'';
+async function load(){
+  const d=await api('cars.php?a=detail&id='+carId);
+  car=d.car;
+  const canEdit=car.can_edit==1;
+  box.innerHTML=`
+  <div class="card plain">
+    ${canEdit?`
+    <input class="input" id="plate" placeholder="车牌号" value="${car.plate||''}">
+    <input class="input" id="owner_name" placeholder="备注称呼（选填）" value="${car.owner_name||''}">
+    <input class="input" id="phone" placeholder="车主电话（选填）" value="${car.phone||''}">
+    <input class="input" id="car_info" placeholder="车型颜色（选填）" value="${car.car_info||''}">
+    <input class="input" id="tags" placeholder="标签（逗号分隔）" value="${car.tags||''}">
+    <button class="btn btn-outline" onclick="saveCar()">保存</button>
+    <button class="btn" style="background:#d93030;margin-top:8px" onclick="delCar()">删除车辆</button>
+    `:`
+    <h2 style="font-size:22px">${car.plate||''}</h2>
+    <p style="color:#666;margin:8px 0">${car.owner_name||''} ${car.phone?'· '+car.phone:''}</p>
+    <p style="color:#999;font-size:13px;margin:4px 0">${car.car_info||''}</p>
+    <p style="color:#999;font-size:13px">添加人：${car.created_by_name||'-'}</p>
+    `}
+    ${car.phone?`
+    <div style="display:flex;gap:10px;margin:12px 0">
+      <a href="tel:${car.phone}" style="flex:1;background:#2a9d4a;color:#fff;text-align:center;padding:14px;border-radius:30px;text-decoration:none;font-weight:600">📞 打电话</a>
+      <button onclick="copyPhone('${car.phone}')" style="flex:1;background:#07c160;color:#fff;border:none;padding:14px;border-radius:30px;font-weight:600;cursor:pointer">💬 加微信</button>
+    </div>`:''}
+  </div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="num" style="color:#d93030">¥${car.debt}</div><div class="label">当前欠款</div></div>
+  </div>
+  <div class="card plain"><h3>历史记录</h3>
+    ${car.records.map(r=>`<div class="item-row">
+      <div style="flex:1">${r.items||'-'}<br><small style="color:#999">${r.service_date} ${r.mileage?r.mileage+'km':''}${r.staff_name?' · '+r.staff_name:''}</small>
+        ${r.photos?'<div style="display:flex;gap:4px;margin-top:4px">'+r.photos.split(',').filter(Boolean).map(p=>'<img src="'+p+'" style="width:50px;height:50px;object-fit:cover;border-radius:6px" onclick="viewPhoto(\''+p+'\')">').join('')+'</div>':''}
+      </div>
+      <b>${r.amount}</b>
+    </div>`).join('')||'<div class="empty">无记录</div>'}
+  </div>`;
+}
+function viewPhoto(src){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  ov.onclick=function(){document.body.removeChild(ov);};
+  var img=document.createElement('img');
+  img.src=src;
+  img.style.cssText='max-width:95%;max-height:95%;object-fit:contain;border-radius:8px;';
+  ov.appendChild(img);
+  document.body.appendChild(ov);
+}
+async function saveCar(){
+  await api('cars.php?a=update',{method:'POST',body:{id:carId,plate:plate.value.trim().toUpperCase(),owner_name:owner_name.value,phone:phone.value,car_info:car_info.value,tags:tags.value}});
+  alert('已保存');load();
+}
+async function delCar(){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  var box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:16px;width:80%;max-width:320px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)';
+  box.innerHTML='<div style="padding:28px 24px 20px;text-align:center;font-size:16px;color:#333;font-weight:500;line-height:1.5">确定删除这辆车？该车辆的所有记录也会一并删除，不可恢复</div>';
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;border-top:1px solid #f0f0f0';
+  var cancel=document.createElement('button');
+  cancel.textContent='取消';
+  cancel.style.cssText='flex:1;padding:15px;border:none;background:#fff;color:#666;font-size:15px;cursor:pointer';
+  cancel.onclick=function(){document.body.removeChild(ov);};
+  var ok=document.createElement('button');
+  ok.textContent='确认删除';
+  ok.style.cssText='flex:1;padding:15px;border:none;background:#fff;color:#d93030;font-size:15px;font-weight:600;cursor:pointer;border-left:1px solid #f0f0f0';
+  ok.onclick=async function(){
+    document.body.removeChild(ov);
+    await api('cars.php?a=delete',{method:'POST',body:{id:carId}});
+    location.href='cars.html';
+  };
+  btns.appendChild(cancel);btns.appendChild(ok);
+  box.appendChild(btns);
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+}
+function copyPhone(p){
+  navigator.clipboard.writeText(p).then(()=>{
+    alert('手机号已复制\n打开微信 → 搜索 → 粘贴 → 添加好友');
+  }).catch(()=>{
+    prompt('手动复制：',p);
+  });
+}
+</script></body></html>

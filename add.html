@@ -1,0 +1,172 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>记一笔</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.dd{position:relative;margin-bottom:10px}
+.dd-btn{width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;font-size:14px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.dd-btn.open{border-color:#e8632a}
+.dd-list{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:100;margin-top:4px;overflow:hidden}
+.dd-list.show{display:block}
+.dd-item{padding:12px 14px;cursor:pointer;font-size:14px}
+.dd-item:hover{background:#fff5f0}
+.dd-item.sel{color:#e8632a;font-weight:600}
+.chip.on{background:#e8632a;color:#fff;border-color:#e8632a}
+</style>
+</head><body>
+
+<div class="pc-sidebar">
+  <div class="logo"><span class="logo-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8632a" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg></span>车掌柜</div>
+  <a href="index.html" ><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>首页</a>
+  <a href="records.html" ><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>维修记录</a>
+  <a href="cars.html" ><svg viewBox="0 0 24 24"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><path d="M4 11h16v6H4z"/></svg>车辆列表</a>
+  <a href="add.html" class="active"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>记一笔</a>
+  <a href="items.html" ><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 8-8l-3.8 3.8z"/></svg>常用项目</a>
+  <a href="staff.html" ><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1"/></svg>员工管理</a>
+  <a href="profile.html" ><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>我的</a>
+  <a href="settings.html" ><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a2 2 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</a>
+</div>
+<div class="pc-main">
+<div class="topbar"><a href="index.html" class="back">‹</a><span>记一笔</span><span style="width:20px"></span></div>
+<div class="card plain">
+  <label style="font-size:13px;color:#999">车牌</label>
+  <div style="display:flex;gap:12px;align-items:center">
+    <input class="input" id="plate" placeholder="输入车牌" oninput="searchCar()" style="flex:1;margin:0">
+    <button class="btn" style="width:100px;padding:0;font-size:14px;flex-shrink:0;height:44px" onclick="ocrPlate()">拍照识别</button>
+  </div>
+  <input type="file" id="ocrFile" accept="image/*" capture="environment" style="display:none" onchange="doOCR(this)">
+  <div id="carPick"></div>
+  <input type="hidden" id="carId">
+</div>
+<div class="card plain">
+  <h3>常用项目（点一下填上，再点取消）</h3>
+  <div id="itemChips"></div>
+  <div id="selSummary" style="margin-top:10px;font-size:13px;color:#666"></div>
+</div>
+<div class="card plain">
+  <input class="input" id="items" placeholder="服务内容（如：小保养+换空调滤芯）">
+  <input class="input" id="amount" type="number" placeholder="金额（元）">
+  <input class="input" id="mileage" type="number" placeholder="里程数（选填）" value="0">
+  <label style="font-size:13px;color:#999">下次提醒</label>
+  <div class="dd" id="ddMonths">
+    <div class="dd-btn" onclick="toggleDd('ddMonths')"><span id="ddMonthsTxt">不提醒</span><span>▾</span></div>
+    <div class="dd-list">
+      <div class="dd-item sel" data-v="0" onclick="pickDd('ddMonths',0,'不提醒')">不提醒</div>
+      <div class="dd-item" data-v="3" onclick="pickDd('ddMonths',3,'3个月后')">3个月后</div>
+      <div class="dd-item" data-v="6" onclick="pickDd('ddMonths',6,'6个月后')">6个月后</div>
+      <div class="dd-item" data-v="12" onclick="pickDd('ddMonths',12,'12个月后')">12个月后</div>
+    </div>
+  </div>
+  <label style="font-size:13px;color:#999">收款方式</label>
+  <div class="dd" id="ddCredit">
+    <div class="dd-btn" onclick="toggleDd('ddCredit')"><span id="ddCreditTxt">已收款</span><span>▾</span></div>
+    <div class="dd-list">
+      <div class="dd-item sel" data-v="0" onclick="pickDd('ddCredit',0,'已收款')">已收款</div>
+      <div class="dd-item" data-v="1" onclick="pickDd('ddCredit',1,'赊账')">赊账</div>
+    </div>
+  </div>
+  <label style="font-size:13px;color:#999;display:block;margin-top:12px">现场照片（可选）</label>
+  <div id="photoPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"></div>
+  <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="uploadPhoto(this)">
+  <button class="chip" onclick="document.getElementById('photoInput').click()" style="width:100%">📷 拍照/选图</button>
+  <button class="btn" onclick="save()">保存记录</button>
+</div>
+<script src="assets/app.js"></script>
+<script>
+let selMonths=0, selCredit=0;
+let selectedItems=[];
+function urlParam(n){return new URLSearchParams(location.search).get(n)||'';}
+plate.value=urlParam('plate');
+if(plate.value) searchCar();
+loadItems();
+async function loadItems(){
+  const d=await api('items.php?a=list');
+  itemChips.innerHTML=d.list.map(i=>`<span class="chip" data-id="${i.id}" data-price="${i.price}" onclick="pickItem(this,'${i.name}')">${i.name} ¥${i.price}</span>`).join('');
+}
+function pickItem(el,name){
+  const price=parseFloat(el.dataset.price);
+  const idx=selectedItems.findIndex(x=>x.name===name);
+  if(idx>=0){
+    el.classList.remove('on');
+    selectedItems.splice(idx,1);
+  }else{
+    el.classList.add('on');
+    selectedItems.push({name,price});
+  }
+  items.value=selectedItems.map(x=>x.name).join('、');
+  amount.value=selectedItems.reduce((s,x)=>s+x.price,0);
+  selSummary.innerHTML=selectedItems.length?selectedItems.map(x=>`<span style="display:inline-block;background:#fff5f0;color:#e8632a;padding:2px 8px;border-radius:4px;margin:2px">${x.name} ¥${x.price}</span>`).join('')+' <b style="margin-left:8px">合计 ¥'+selectedItems.reduce((s,x)=>s+x.price,0)+'</b>':'';
+}
+function toggleDd(id){
+  document.querySelectorAll('.dd-list').forEach(l=>l.classList.remove('show'));
+  document.querySelectorAll('.dd-btn').forEach(b=>b.classList.remove('open'));
+  document.getElementById(id).querySelector('.dd-list').classList.add('show');
+  event.currentTarget.classList.add('open');
+}
+function pickDd(id,v,txt){
+  if(id==='ddMonths')selMonths=v;
+  else selCredit=v;
+  document.getElementById(id).querySelector('.dd-list').classList.remove('show');
+  document.getElementById(id).querySelector('.dd-btn').classList.remove('open');
+  document.getElementById(id).querySelector('.dd-btn span').textContent=txt;
+  document.querySelectorAll('#'+id+' .dd-item').forEach(x=>x.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd')){
+    document.querySelectorAll('.dd-list').forEach(l=>l.classList.remove('show'));
+  }
+});
+async function searchCar(){
+  const kw=plate.value.trim();if(!kw){carPick.innerHTML='';return;}
+  const d=await api('cars.php?a=search&kw='+encodeURIComponent(kw));
+  // 精确匹配自动选中
+  const exact=d.list.find(c=>c.plate===kw.toUpperCase());
+  if(exact){pickCar(exact.id,exact.plate);return;}
+  carPick.innerHTML=d.list.map(c=>`<div class="item-row" onclick="pickCar(${c.id},'${c.plate}')">
+    <b>${c.plate}</b> ${c.owner_name||''}</div>`).join('') || `<div class="empty">没找到？<a href="#" onclick="newCar()" style="color:#e8632a">点此新建 ${kw}</a></div>`;
+}
+function pickCar(id,p){carId.value=id;plate.value=p;carPick.innerHTML='';}
+async function newCar(){
+  const p=plate.value.trim();if(!p)return;
+  const d=await api('cars.php?a=create',{method:'POST',body:{plate:p}});
+  carId.value=d.id;carPick.innerHTML='<span style="color:#2a9d2a">✓ 已新建车辆</span>';
+}
+function ocrPlate(){ document.getElementById('ocrFile').click(); }
+async function doOCR(input){
+  const f=input.files[0]; if(!f)return;
+  const fd=new FormData(); fd.append('file',f);
+  try{
+    const r=await fetch(API+'services.php?a=ocr',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+    const d=await r.json();
+    if(d.code===1 && d.plate){
+      plate.value=d.plate; searchCar();
+    } else {
+      alert(d.msg||'识别失败，请手动输入');
+    }
+  }catch(e){ alert('识别失败：'+e.message); }
+}
+async function save(){
+  if(!carId.value){alert('请选车牌');return;}
+  await api('services.php?a=create',{method:'POST',body:{
+    car_id:carId.value,items:items.value,amount:amount.value,
+    mileage:mileage.value,is_credit:selCredit,next_months:selMonths,
+    photos:window._photos||[]
+  }});
+  location.href='records.html';
+}
+window._photos=[];
+async function uploadPhoto(input){
+  for(const f of input.files){
+    const fd=new FormData();
+    fd.append('a','upload');fd.append('photo',f);
+    const r=await fetch('api/upload.php',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+    const d=await r.json();
+    if(d.code===1){
+      window._photos.push(d.url);
+      photoPreview.innerHTML+=`<img src="${d.url}" style="width:70px;height:70px;object-fit:cover;border-radius:8px">`;
+    }
+  }
+  input.value='';
+}
+</script></div>
+<script>if(localStorage.getItem("role")==="staff"){document.querySelectorAll(".pc-sidebar a").forEach(function(a){if(a.href.indexOf("staff.html")>=0||a.href.indexOf("settings.html")>=0)a.style.display="none";});}</script></body></html>
